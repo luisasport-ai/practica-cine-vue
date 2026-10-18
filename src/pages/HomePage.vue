@@ -1,9 +1,13 @@
+<script setup lang="ts">
+import VideoPrincipal from '../components/VideoPrincipal.vue'
+</script>
+
 <template>
   <main class="pagina">
     <section id="inicio" class="seccion presentacion" aria-labelledby="titulo-inicio">
       <div class="contenido">
         <h1 id="titulo-inicio">El cine empieza aquí</h1>
-        <p class="descripcion">Un lugar para descubrir historias y elegir tu próxima película.</p>
+        <VideoPrincipal />
       </div>
     </section>
 
@@ -73,13 +77,5 @@ h1 {
 
 h2 {
   font-size: clamp(2rem, 4vw, 3.4rem);
-}
-
-.descripcion {
-  max-width: 38rem;
-  margin: 1.5rem 0 0;
-  color: #bdbdbd;
-  font-size: 1.1rem;
-  line-height: 1.6;
 }
 </style>
