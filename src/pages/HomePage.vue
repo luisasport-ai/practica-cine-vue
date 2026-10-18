@@ -1,5 +1,44 @@
 <script setup lang="ts">
+import TarjetaPelicula from '../components/TarjetaPelicula.vue'
 import VideoPrincipal from '../components/VideoPrincipal.vue'
+
+const portadasCartelera = import.meta.glob<string>([
+  '../assets/cartelera/cartelera*.png',
+  '../assets/cartelera/cartelera*.jpg',
+  '../assets/cartelera/cartelera*.jfif',
+], {
+  eager: true,
+  query: '?url',
+  import: 'default',
+})
+
+const datosPeliculas = [
+  { titulo: 'Street Fighter', descripcion: 'Acción para los amantes de los combates.' },
+  { titulo: 'Halloween', descripcion: 'Una noche de terror en la pantalla grande.' },
+  { titulo: 'La odisea', descripcion: 'Un viaje épico lleno de desafíos.' },
+  { titulo: 'Origen', descripcion: 'Una aventura entre los sueños y la realidad.' },
+  { titulo: 'La Patrulla Canina', descripcion: 'Una aventura para disfrutar en familia.' },
+  { titulo: 'Los colores del tiempo', descripcion: 'Una historia que nos lleva a otra época.' },
+]
+
+const peliculas: { titulo: string; descripcion: string; portada: string }[] = []
+
+for (let numero = 1; numero <= 43; numero++) {
+  const ruta = `../assets/cartelera/cartelera${numero}`
+  const portada =
+    portadasCartelera[`${ruta}.png`] ??
+    portadasCartelera[`${ruta}.jpg`] ??
+    portadasCartelera[`${ruta}.jfif`]
+
+  if (portada) {
+    const datos = datosPeliculas[numero - 1]
+    peliculas.push({
+      titulo: datos?.titulo ?? `Película ${numero}`,
+      descripcion: datos?.descripcion ?? 'Una historia para descubrir en CineMundo.',
+      portada,
+    })
+  }
+}
 </script>
 
 <template>
@@ -14,6 +53,15 @@ import VideoPrincipal from '../components/VideoPrincipal.vue'
     <section id="peliculas" class="seccion" aria-labelledby="titulo-peliculas">
       <div class="contenido">
         <h2 id="titulo-peliculas">Películas para descubrir</h2>
+        <div class="lista-peliculas">
+          <TarjetaPelicula
+            v-for="pelicula in peliculas"
+            :key="pelicula.titulo"
+            :titulo="pelicula.titulo"
+            :descripcion="pelicula.descripcion"
+            :portada="pelicula.portada"
+          />
+        </div>
       </div>
     </section>
 
@@ -77,5 +125,12 @@ h1 {
 
 h2 {
   font-size: clamp(2rem, 4vw, 3.4rem);
+}
+
+.lista-peliculas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+  gap: 1.5rem;
+  margin-top: 2.5rem;
 }
 </style>
