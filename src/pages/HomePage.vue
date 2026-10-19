@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import { ref } from 'vue'
+import MensajesConfianza from '../components/MensajesConfianza.vue'
+import ModalPelicula from '../components/ModalPelicula.vue'
 import TarjetaPelicula from '../components/TarjetaPelicula.vue'
 import VideoPrincipal from '../components/VideoPrincipal.vue'
 
@@ -21,7 +24,10 @@ const datosPeliculas = [
   { titulo: 'Los colores del tiempo', descripcion: 'Una historia que nos lleva a otra época.' },
 ]
 
-const peliculas: { titulo: string; descripcion: string; portada: string }[] = []
+type Pelicula = { titulo: string; descripcion: string; portada: string }
+
+const peliculas: Pelicula[] = []
+const peliculaSeleccionada = ref<Pelicula | null>(null)
 
 for (let numero = 1; numero <= 43; numero++) {
   const ruta = `../assets/cartelera/cartelera${numero}`
@@ -60,22 +66,21 @@ for (let numero = 1; numero <= 43; numero++) {
             :titulo="pelicula.titulo"
             :descripcion="pelicula.descripcion"
             :portada="pelicula.portada"
+            @seleccionar="peliculaSeleccionada = pelicula"
           />
         </div>
       </div>
     </section>
 
-    <section id="beneficios" class="seccion" aria-labelledby="titulo-beneficios">
-      <div class="contenido">
-        <h2 id="titulo-beneficios">Cada visita tiene algo especial</h2>
-      </div>
-    </section>
+    <MensajesConfianza />
 
-    <section id="despedida" class="seccion" aria-labelledby="titulo-despedida">
-      <div class="contenido">
-        <h2 id="titulo-despedida">La próxima historia te espera</h2>
-      </div>
-    </section>
+    <ModalPelicula
+      v-if="peliculaSeleccionada"
+      :titulo="peliculaSeleccionada.titulo"
+      :descripcion="peliculaSeleccionada.descripcion"
+      :portada="peliculaSeleccionada.portada"
+      @cerrar="peliculaSeleccionada = null"
+    />
   </main>
 </template>
 
