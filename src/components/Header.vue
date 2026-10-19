@@ -9,6 +9,12 @@ import iconoLogin from '../assets/login.png'
         Cine<span>Mundo</span>
       </a>
 
+      <nav class="navegacion" aria-label="Navegación principal">
+        <a href="#inicio">Inicio</a>
+        <a href="#peliculas">Cartelera</a>
+        <a href="#beneficios">Confianza</a>
+      </nav>
+
       <img class="icono-acceso" :src="iconoLogin" alt="Usuario" width="32" height="32" />
     </div>
   </header>
@@ -42,9 +48,40 @@ import iconoLogin from '../assets/login.png'
   color: #d32f2f;
 }
 
+.navegacion {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem 2rem;
+}
+
+.navegacion a {
+  padding: 0.75rem 0;
+  color: inherit;
+  text-decoration: none;
+}
+
+.navegacion a:hover,
+.navegacion a:focus-visible {
+  text-decoration: underline;
+}
+
 .icono-acceso {
   display: block;
   width: 32px;
   height: 32px;
+}
+
+@media (max-width: 640px) {
+  .contenido {
+    flex-wrap: wrap;
+    padding: 0.75rem 0;
+  }
+
+  .navegacion {
+    order: 3;
+    width: 100%;
+  }
 }
 </style>
