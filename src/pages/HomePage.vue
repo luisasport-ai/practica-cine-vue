@@ -1,50 +1,34 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import MensajesConfianza from '../components/MensajesConfianza.vue'
 import ModalPelicula from '../components/ModalPelicula.vue'
 import TarjetaPelicula from '../components/TarjetaPelicula.vue'
 import VideoPrincipal from '../components/VideoPrincipal.vue'
 
-const portadasCartelera = import.meta.glob<string>([
-  '../assets/cartelera/cartelera*.png',
-  '../assets/cartelera/cartelera*.jpg',
-  '../assets/cartelera/cartelera*.jfif',
-], {
-  eager: true,
-  query: '?url',
-  import: 'default',
-})
+const apiKey = '68f676c7186e888da81b15bf923a9bdd'
 
-const datosPeliculas = [
-  { titulo: 'Street Fighter', descripcion: 'Acción para los amantes de los combates.' },
-  { titulo: 'Halloween', descripcion: 'Una noche de terror en la pantalla grande.' },
-  { titulo: 'La odisea', descripcion: 'Un viaje épico lleno de desafíos.' },
-  { titulo: 'Origen', descripcion: 'Una aventura entre los sueños y la realidad.' },
-  { titulo: 'La Patrulla Canina', descripcion: 'Una aventura para disfrutar en familia.' },
-  { titulo: 'Los colores del tiempo', descripcion: 'Una historia que nos lleva a otra época.' },
-]
+type PeliculaApi = { id: number; title: string; overview: string; poster_path: string | null }
+type Pelicula = { id: number; titulo: string; descripcion: string; portada: string }
 
-type Pelicula = { titulo: string; descripcion: string; portada: string }
-
-const peliculas: Pelicula[] = []
+const peliculas = ref<Pelicula[]>([])
 const peliculaSeleccionada = ref<Pelicula | null>(null)
 
-for (let numero = 1; numero <= 43; numero++) {
-  const ruta = `../assets/cartelera/cartelera${numero}`
-  const portada =
-    portadasCartelera[`${ruta}.png`] ??
-    portadasCartelera[`${ruta}.jpg`] ??
-    portadasCartelera[`${ruta}.jfif`]
+onMounted(async () => {
+  const respuesta = await fetch(
+    `https://api.themoviedb.org/3/movie/now_playing?api_key=${apiKey}&language=es-ES&page=1`,
+  )
+  const datos: { results: PeliculaApi[] } = await respuesta.json()
 
-  if (portada) {
-    const datos = datosPeliculas[numero - 1]
-    peliculas.push({
-      titulo: datos?.titulo ?? `Película ${numero}`,
-      descripcion: datos?.descripcion ?? 'Una historia para descubrir en CineMundo.',
-      portada,
-    })
-  }
-}
+  peliculas.value = datos.results
+    .filter((pelicula) => pelicula.poster_path)
+    .slice(0, 8)
+    .map((pelicula) => ({
+      id: pelicula.id,
+      titulo: pelicula.title,
+      descripcion: pelicula.overview || 'Sin descripción disponible.',
+      portada: `https://image.tmdb.org/t/p/w500${pelicula.poster_path}`,
+    }))
+})
 </script>
 
 <template>
@@ -62,7 +46,7 @@ for (let numero = 1; numero <= 43; numero++) {
         <div class="lista-peliculas">
           <TarjetaPelicula
             v-for="pelicula in peliculas"
-            :key="pelicula.titulo"
+            :key="pelicula.id"
             :titulo="pelicula.titulo"
             :descripcion="pelicula.descripcion"
             :portada="pelicula.portada"
